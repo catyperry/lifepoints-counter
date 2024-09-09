@@ -9,22 +9,49 @@ export const Counter = () => {
   const [sign, setSign] = React.useState<1 | -1>(1);
   const [custom, setCustom] = React.useState(false);
   const [awake, setAwake] = React.useState(false);
-  const timeoutRef = React.useRef<NodeJS.Timeout>();
+  const ref = React.useRef<HTMLDivElement>(null);
 
-  const wake = () => {
-    if (!awake) {
-      setAwake(true);
-      clearTimeout(timeoutRef.current);
-      if (!custom) timeoutRef.current = setTimeout(() => setAwake(false), 7000);
+  const wakeUp = React.useCallback(() => {
+    setAwake(true);
+    const node = ref.current;
+    if (node) {
+      node.removeEventListener('mousemove', wakeUp);
+      node.removeEventListener('mousedown', wakeUp);
+      node.removeEventListener('keydown', wakeUp);
+      node.removeEventListener('touchstart', wakeUp);
     }
-  };
+  }, []);
+
+  const setToSleep = React.useCallback(() => {
+    const node = ref.current;
+    if (node) {
+      node.addEventListener('mousemove', wakeUp);
+      node.addEventListener('mousedown', wakeUp);
+      node.addEventListener('keydown', wakeUp);
+      node.addEventListener('touchstart', wakeUp);
+    }
+    setAwake(false);
+  }, [wakeUp]);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    node.addEventListener('mousemove', wakeUp);
+    node.addEventListener('mousedown', wakeUp);
+    node.addEventListener('keydown', wakeUp);
+    node.addEventListener('touchstart', wakeUp);
+
+    return () => {
+      node.removeEventListener('mousemove', wakeUp);
+      node.removeEventListener('mousedown', wakeUp);
+      node.removeEventListener('keydown', wakeUp);
+      node.removeEventListener('touchstart', wakeUp);
+    };
+  }, [wakeUp]);
 
   return (
-    <div
-      onMouseEnter={() => wake()}
-      onClick={() => wake()}
-      className="flex h-full flex-col items-center justify-center gap-4 bg-gradient-to-b from-slate-950 to-indigo-950 px-4 py-4"
-    >
+    <div className="relative flex h-full select-none flex-col items-center justify-center gap-4 bg-gradient-to-b from-slate-950 to-indigo-950 px-4 py-4">
+      <div ref={ref} className={`absolute inset-0 ${awake ? '-z-10' : 'z-10'}`} />
       {!custom && (
         <div className={`flex-1 transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}>
           <div className="flex flex-wrap items-start justify-center gap-2">
@@ -43,7 +70,10 @@ export const Counter = () => {
             <button
               disabled={diff === 0}
               className="inline-flex min-w-24 items-center justify-center gap-2 rounded-full border border-transparent bg-blue-950 px-3 py-2 text-xl leading-none text-white disabled:opacity-50"
-              onClick={() => setDiff(0)}
+              onClick={() => {
+                setDiff(0);
+                setToSleep();
+              }}
             >
               <X size="20" />
               <span>Clear</span>
@@ -52,25 +82,36 @@ export const Counter = () => {
         </div>
       )}
       <div className="grid w-full shrink-0 grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-2">
-        <div className="col-start-2 text-end text-5xl font-bold" onClick={() => awake && setAwake(false)}>
+        <div
+          onClick={() => {
+            if (awake) setToSleep();
+            else wakeUp();
+          }}
+          className="col-start-2 text-end text-5xl font-bold"
+        >
           <span>{points}</span>
         </div>
         <div
-          className={`col-start-1 flex items-center justify-end transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}
+          className={`col-start-1 flex items-center justify-end transition-opacity ${awake || custom ? '' : 'pointer-events-none opacity-0'}`}
         >
           <IconButton negative={sign === -1} onClick={() => setSign((prev) => (prev === 1 ? -1 : 1))}>
             {sign === 1 ? <Plus /> : <Minus />}
           </IconButton>
         </div>
-        <div className={`min text-end text-5xl transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}>
+        <div
+          className={`min text-end text-5xl transition-opacity ${awake || custom ? '' : 'pointer-events-none opacity-0'}`}
+        >
           <span>{diff}</span>
         </div>
 
-        <div className={`flex items-center transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}>
+        <div
+          className={`flex items-center transition-opacity ${awake || custom ? '' : 'pointer-events-none opacity-0'}`}
+        >
           <IconButton
             onClick={() => {
               setPoints((prev) => Math.min(99999, Math.max(0, prev + diff * sign)));
               setDiff(0);
+              setToSleep();
             }}
           >
             <Equal />
@@ -124,8 +165,6 @@ export const Counter = () => {
                 large
                 onClick={() => {
                   setCustom(false);
-                  clearTimeout(timeoutRef.current);
-                  timeoutRef.current = setTimeout(() => setAwake(false), 7000);
                 }}
               >
                 <X />
@@ -140,7 +179,6 @@ export const Counter = () => {
               large
               onClick={() => {
                 setCustom(true);
-                clearTimeout(timeoutRef.current);
               }}
             >
               <Calculator />
