@@ -1,7 +1,8 @@
 'use client';
 
-import { Calculator, Equal, Minus, Plus, X } from 'lucide-react';
+import { Calculator, Equal, Minus, Plus, RefreshCw, X } from 'lucide-react';
 import React from 'react';
+import { Button, IconButton } from './Button';
 
 export const Counter = () => {
   const [points, setPoints] = React.useState(8000);
@@ -11,9 +12,10 @@ export const Counter = () => {
   const [awake, setAwake] = React.useState(false);
 
   return (
-    <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 py-4">
+    <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 pb-4 pt-4">
       {!awake && (
         <div
+          className="absolute left-0 top-0 z-10 h-full w-full"
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -33,10 +35,11 @@ export const Counter = () => {
             event.stopPropagation();
             setAwake(true);
           }}
-          className="absolute left-0 top-0 z-10 h-full w-full"
         />
       )}
-      <div className={`flex h-full flex-col items-center justify-center gap-4 ${awake ? '' : 'pointer-events-none'}`}>
+      <div
+        className={`flex h-full flex-col items-center justify-center gap-2 ${awake ? '' : 'pointer-events-none touch-none'}`}
+      >
         {!custom && (
           <div className={`flex-1 transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}>
             <div className="flex flex-wrap items-start justify-center gap-2">
@@ -53,6 +56,7 @@ export const Counter = () => {
                 {sign === 1 ? '+' : '-'}100
               </Button>
               <button
+                disabled={!diff}
                 className="inline-flex min-w-24 items-center justify-center gap-2 rounded-full border border-transparent bg-blue-950 px-3 py-2 text-xl leading-none text-white disabled:opacity-50"
                 onClick={() => {
                   setDiff(0);
@@ -62,6 +66,9 @@ export const Counter = () => {
                 <X size="20" />
                 <span>Clear</span>
               </button>
+              <IconButton onClick={() => setPoints(8000)}>
+                <RefreshCw />
+              </IconButton>
             </div>
           </div>
         )}
@@ -172,37 +179,5 @@ export const Counter = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-const Button = ({
-  children,
-  negative,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { negative?: boolean }) => {
-  return (
-    <button
-      className={`inline-flex items-center justify-center rounded-full border bg-indigo-950 text-xl leading-none text-white ${negative ? 'border-rose-900' : 'border-indigo-800'} min-w-24 px-3 py-2`}
-      {...props}
-    >
-      <span>{children}</span>
-    </button>
-  );
-};
-
-const IconButton = ({
-  children,
-  negative,
-  auto,
-  large,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { negative?: boolean; large?: boolean; auto?: boolean }) => {
-  return (
-    <button
-      className={`inline-flex items-center justify-center rounded-full border bg-indigo-950 text-xl leading-none text-white ${negative ? 'border-rose-900' : 'border-indigo-800'} ${auto ? 'min-h-10 min-w-10 px-3 py-2' : large ? 'h-12 w-12' : 'h-10 w-10'}`}
-      {...props}
-    >
-      <span>{children}</span>
-    </button>
   );
 };
