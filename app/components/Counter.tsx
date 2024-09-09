@@ -105,7 +105,26 @@ export const Counter = () => {
           >
             <IconButton
               onClick={() => {
-                setPoints((prev) => Math.min(99999, Math.max(0, prev + diff * sign)));
+                const stepTime = 50;
+                const steps = 800 / stepTime;
+                const stepSize = Math.floor(diff / steps);
+                const result = Math.min(99999, Math.max(0, points + diff * sign));
+                let currentStep = 0;
+                const intervalId = setInterval(() => {
+                  currentStep++;
+                  setPoints((prev) => {
+                    const newValue = Math.min(99999, Math.max(0, prev + stepSize * sign));
+                    if (
+                      currentStep >= steps ||
+                      (sign === -1 && newValue <= result) ||
+                      (sign === 1 && newValue >= result)
+                    ) {
+                      clearInterval(intervalId);
+                      return result;
+                    }
+                    return newValue;
+                  });
+                }, stepTime);
                 setDiff(0);
                 setCustom(false);
                 setAwake(false);
