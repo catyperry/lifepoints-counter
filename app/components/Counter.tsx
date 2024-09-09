@@ -66,7 +66,13 @@ export const Counter = () => {
                 <X size="20" />
                 <span>Clear</span>
               </button>
-              <IconButton onClick={() => setPoints(8000)}>
+              <IconButton
+                onClick={() => {
+                  setPoints(8000);
+                  setDiff(0);
+                  setAwake(false);
+                }}
+              >
                 <RefreshCw />
               </IconButton>
             </div>
