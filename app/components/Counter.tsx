@@ -12,6 +12,25 @@ export const Counter = () => {
   const [awake, setAwake] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
+  const animatedCount = (diff: number, sign: -1 | 1) => {
+    const stepTime = 50;
+    const steps = 800 / stepTime;
+    const stepSize = Math.floor(diff / steps);
+    const result = Math.min(99999, Math.max(0, points + diff * sign));
+    let currentStep = 0;
+    const intervalId = setInterval(() => {
+      currentStep++;
+      setPoints((prev) => {
+        const newValue = Math.min(99999, Math.max(0, prev + stepSize * sign));
+        if (currentStep >= steps || (sign === -1 && newValue <= result) || (sign === 1 && newValue >= result)) {
+          clearInterval(intervalId);
+          return result;
+        }
+        return newValue;
+      });
+    }, stepTime);
+  };
+
   return (
     <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 pb-4 pt-4">
       {!awake && (
@@ -75,7 +94,7 @@ export const Counter = () => {
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    setPoints(8000);
+                    animatedCount(Math.abs(8000 - points), points > 8000 ? -1 : 1);
                     setDiff(0);
                     setAwake(false);
                   }}
@@ -113,26 +132,7 @@ export const Counter = () => {
           >
             <IconButton
               onClick={() => {
-                const stepTime = 50;
-                const steps = 800 / stepTime;
-                const stepSize = Math.floor(diff / steps);
-                const result = Math.min(99999, Math.max(0, points + diff * sign));
-                let currentStep = 0;
-                const intervalId = setInterval(() => {
-                  currentStep++;
-                  setPoints((prev) => {
-                    const newValue = Math.min(99999, Math.max(0, prev + stepSize * sign));
-                    if (
-                      currentStep >= steps ||
-                      (sign === -1 && newValue <= result) ||
-                      (sign === 1 && newValue >= result)
-                    ) {
-                      clearInterval(intervalId);
-                      return result;
-                    }
-                    return newValue;
-                  });
-                }, stepTime);
+                animatedCount(diff, sign);
                 setDiff(0);
                 setCustom(false);
                 setAwake(false);
