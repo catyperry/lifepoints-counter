@@ -1,15 +1,16 @@
 'use client';
 
-import { Calculator, Equal, Minus, Plus, RefreshCw, X } from 'lucide-react';
+import { Calculator, Check, Minus, Plus, RefreshCw, X } from 'lucide-react';
 import React from 'react';
 import { Button, IconButton } from './Button';
 
 export const Counter = () => {
   const [points, setPoints] = React.useState(8000);
   const [diff, setDiff] = React.useState(0);
-  const [sign, setSign] = React.useState<1 | -1>(1);
+  const [sign, setSign] = React.useState<1 | -1>(-1);
   const [custom, setCustom] = React.useState(false);
   const [awake, setAwake] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
 
   return (
     <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 pb-4 pt-4">
@@ -38,6 +39,12 @@ export const Counter = () => {
         />
       )}
       <div
+        ref={ref}
+        onClick={(event) => {
+          if (ref.current === event.target) {
+            setAwake(false);
+          }
+        }}
         className={`flex h-full flex-col items-center justify-center gap-2 ${awake ? '' : 'pointer-events-none touch-none'}`}
       >
         {!custom && (
@@ -78,10 +85,10 @@ export const Counter = () => {
             </div>
           </div>
         )}
-        <div className="grid w-full shrink-0 grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-2">
+        <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-2">
           <div
             onClick={() => {
-              setAwake(false);
+              if (!custom) setAwake(false);
             }}
             className="col-start-2 text-end text-5xl font-bold"
           >
@@ -130,7 +137,7 @@ export const Counter = () => {
                 setAwake(false);
               }}
             >
-              <Equal />
+              <Check />
             </IconButton>
           </div>
         </div>
