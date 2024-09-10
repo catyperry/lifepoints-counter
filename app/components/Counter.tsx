@@ -49,39 +49,40 @@ export const Counter = () => {
       >
         {!custom && (
           <div className={`flex-1 transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}>
-            <div className="flex flex-wrap items-start justify-center gap-2">
+            <div className="relative grid grid-cols-2 gap-2">
               <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 1000)}>
                 {sign === 1 ? '+' : '-'}1000
               </Button>
-              <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 500)}>
-                {sign === 1 ? '+' : '-'}500
-              </Button>
+
               <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 200)}>
                 {sign === 1 ? '+' : '-'}200
+              </Button>
+
+              <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 500)}>
+                {sign === 1 ? '+' : '-'}500
               </Button>
               <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 100)}>
                 {sign === 1 ? '+' : '-'}100
               </Button>
-              <button
-                disabled={!diff}
-                className="inline-flex min-w-24 items-center justify-center gap-2 rounded-full border border-transparent bg-blue-950 px-3 py-2 text-xl leading-none text-white disabled:opacity-50"
-                onClick={() => {
-                  setDiff(0);
-                  setAwake(false);
-                }}
-              >
-                <X size="20" />
-                <span>Clear</span>
-              </button>
-              <IconButton
-                onClick={() => {
-                  setPoints(8000);
-                  setDiff(0);
-                  setAwake(false);
-                }}
-              >
-                <RefreshCw />
-              </IconButton>
+              <div className="absolute left-full top-0 grid grid-cols-1 gap-2 pl-2">
+                <IconButton
+                  onClick={() => {
+                    setDiff(0);
+                    setAwake(false);
+                  }}
+                >
+                  <X size="20" />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setPoints(8000);
+                    setDiff(0);
+                    setAwake(false);
+                  }}
+                >
+                  <RefreshCw />
+                </IconButton>
+              </div>
             </div>
           </div>
         )}
@@ -143,7 +144,7 @@ export const Counter = () => {
         </div>
         <div className="flex-1">
           {custom ? (
-            <div className="flex h-full flex-col items-center justify-center gap-2">
+            <div className="flex h-full flex-col items-center justify-between gap-2">
               <div className="grid grid-cols-3 gap-1">
                 <IconButton auto onClick={() => setDiff((prev) => Math.min(99999, parseInt(prev.toString() + '1')))}>
                   1
@@ -196,7 +197,7 @@ export const Counter = () => {
             </div>
           ) : (
             <div
-              className={`flex h-full items-center justify-center transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}
+              className={`flex h-full items-end justify-center transition-opacity ${awake ? '' : 'pointer-events-none opacity-0'}`}
             >
               <IconButton
                 large
