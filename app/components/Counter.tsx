@@ -64,7 +64,7 @@ export const Counter = () => {
               <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 100)}>
                 {sign === 1 ? '+' : '-'}100
               </Button>
-              <div className="absolute left-full top-0 grid grid-cols-1 gap-2 pl-2">
+              <div className="absolute left-full top-1/2 grid -translate-y-1/2 grid-cols-1 gap-2 pl-2">
                 <IconButton
                   onClick={() => {
                     setDiff(0);
