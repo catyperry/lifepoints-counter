@@ -20,8 +20,8 @@ export function Main() {
   };
 
   return (
-    <main className="flex h-full w-full flex-col items-center">
-      <div className="w-full flex-1 rotate-180 pt-5">
+    <main className="h-full w-full items-center">
+      <div className="h-1/2 w-full rotate-180 pt-5">
         <Counter
           awake={awake1}
           setAwake={(a) => {
@@ -56,7 +56,7 @@ export function Main() {
         </div>
       </div>
       <hr className="absolute left-0 top-1/2 w-full -translate-y-1/2 border-indigo-950" />
-      <div className="w-full flex-1 pt-5">
+      <div className="h-1/2 w-full pt-5">
         <Counter
           awake={awake2}
           setAwake={(a) => {
