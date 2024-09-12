@@ -4,33 +4,24 @@ import React from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Physics, useCylinder, usePlane, Triplet } from '@react-three/cannon';
 import { useTexture } from '@react-three/drei';
-import { IconButton } from '../components/Button';
-import Image from 'next/image';
 import { Mesh } from 'three';
 
-export default function Page() {
-  const [flipCoin, setFlipCoin] = React.useState(false);
-
+export const CoinFlip = ({ setFlipCoin }: { setFlipCoin: (active: boolean) => void }) => {
   return (
-    <div className="relative h-dvh w-dvw">
-      <div className="relative flex h-full w-full items-center justify-center bg-gradient-to-b from-green-200 to-green-500">
-        {flipCoin ? (
-          <div className="absolute left-0 top-0 h-full w-full">
-            <CoinFlip setFlipCoin={setFlipCoin} />
-          </div>
-        ) : (
-          <IconButton onClick={() => setFlipCoin(true)}>
-            <div className="">
-              <Image src="/AnubisCoin_Front.webp" width="1000" height="1000" alt="Coin with Anubis displayed" />
-            </div>
-          </IconButton>
-        )}
-      </div>
-    </div>
+    <Canvas shadows gl={{ alpha: true }} className="h-dvh w-dvw border-none bg-transparent text-transparent">
+      <ambientLight intensity={1} />
+      <directionalLight position={[0, 5, 5]} intensity={1} castShadow />
+      <Physics gravity={[0, 0, -9.8]}>
+        {/* Simulate Earth's gravity */}
+        <Coin />
+        <Ground onClick={() => setFlipCoin(false)} />
+      </Physics>
+      {/* <OrbitControls /> */}
+    </Canvas>
   );
-}
+};
 
-const Coin: React.FC = () => {
+const Coin = () => {
   const textureFront = useTexture('/AnubisCoin_Front.webp');
   const textureBack = useTexture('/AnubisCoin_Back.webp');
   const coinSize = 0.4;
@@ -122,21 +113,6 @@ const Ground = ({ onClick }: { onClick: () => void }) => {
       <planeGeometry args={[100, 100]} />
       <shadowMaterial transparent opacity={0.3} />
     </mesh>
-  );
-};
-
-const CoinFlip = ({ setFlipCoin }: { setFlipCoin: (active: boolean) => void }) => {
-  return (
-    <Canvas shadows gl={{ alpha: true }} className="h-dvh w-dvw border-none bg-transparent text-transparent">
-      <ambientLight intensity={1} />
-      <directionalLight position={[0, 5, 5]} intensity={1} castShadow />
-      <Physics gravity={[0, 0, -9.8]}>
-        {/* Simulate Earth's gravity */}
-        <Coin />
-        <Ground onClick={() => setFlipCoin(false)} />
-      </Physics>
-      {/* <OrbitControls /> */}
-    </Canvas>
   );
 };
 

@@ -4,12 +4,11 @@ import { Calculator, Check, Minus, Plus, RefreshCw, X } from 'lucide-react';
 import React from 'react';
 import { Button, IconButton } from './Button';
 
-export const Counter = () => {
+export const Counter = ({ awake, setAwake }: { awake: boolean; setAwake: (awake: boolean) => void }) => {
   const [points, setPoints] = React.useState(8000);
   const [diff, setDiff] = React.useState(0);
   const [sign, setSign] = React.useState<1 | -1>(-1);
   const [custom, setCustom] = React.useState(false);
-  const [awake, setAwake] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
   const animatedCount = (diff: number, sign: -1 | 1) => {
@@ -32,7 +31,7 @@ export const Counter = () => {
   };
 
   return (
-    <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 pb-4 pt-4">
+    <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 pb-4">
       {!awake && (
         <div
           className="absolute left-0 top-0 z-10 h-full w-full"
