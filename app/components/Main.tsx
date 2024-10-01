@@ -97,30 +97,30 @@ export function Main() {
           </IconButton>
         </div>
       </div>
-      {(awake1 || awake2) && (
-        <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2">
-          <IconButton
-            onClick={() => {
-              animatedCount({
-                points: points1,
-                setPoints: setPoints1,
-                diff: Math.abs(8000 - points1),
-                sign: points1 > 8000 ? -1 : 1,
-              });
-              animatedCount({
-                points: points2,
-                setPoints: setPoints2,
-                diff: Math.abs(8000 - points2),
-                sign: points2 > 8000 ? -1 : 1,
-              });
-              setAwake1(false);
-              setAwake2(false);
-            }}
-          >
-            <RefreshCw />
-          </IconButton>
-        </div>
-      )}
+      <div
+        className={`absolute left-4 top-1/2 z-10 -translate-y-1/2 transition-opacity ${awake1 || awake2 ? '' : 'pointer-events-none opacity-0'}`}
+      >
+        <IconButton
+          onClick={() => {
+            animatedCount({
+              points: points1,
+              setPoints: setPoints1,
+              diff: Math.abs(8000 - points1),
+              sign: points1 > 8000 ? -1 : 1,
+            });
+            animatedCount({
+              points: points2,
+              setPoints: setPoints2,
+              diff: Math.abs(8000 - points2),
+              sign: points2 > 8000 ? -1 : 1,
+            });
+            setAwake1(false);
+            setAwake2(false);
+          }}
+        >
+          <RefreshCw />
+        </IconButton>
+      </div>
       <hr className="absolute left-0 top-1/2 w-full -translate-y-1/2 border-indigo-950" />
       <div className="h-1/2 w-full pt-5">
         <Counter
