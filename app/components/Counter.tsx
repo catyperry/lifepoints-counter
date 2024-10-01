@@ -1,34 +1,31 @@
 'use client';
 
-import { Calculator, Check, Minus, Plus, RefreshCw, X } from 'lucide-react';
+import { Calculator, Check, Minus, Plus, X } from 'lucide-react';
 import React from 'react';
 import { Button, IconButton } from './Button';
 
-export const Counter = ({ awake, setAwake }: { awake: boolean; setAwake: (awake: boolean) => void }) => {
-  const [points, setPoints] = React.useState(8000);
+export const Counter = ({
+  id,
+  points,
+  animatedCount,
+  awake,
+  setAwake,
+}: {
+  id: string;
+  points: number;
+  animatedCount: (diff: number, sign: -1 | 1) => void;
+  awake: boolean;
+  setAwake: (awake: boolean) => void;
+}) => {
   const [diff, setDiff] = React.useState(0);
   const [sign, setSign] = React.useState<1 | -1>(-1);
   const [custom, setCustom] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
+  const [isClient, setIsClient] = React.useState(false);
 
-  const animatedCount = (diff: number, sign: -1 | 1) => {
-    const stepTime = 50;
-    const steps = 800 / stepTime;
-    const stepSize = Math.floor(diff / steps);
-    const result = Math.min(99999, Math.max(0, points + diff * sign));
-    let currentStep = 0;
-    const intervalId = setInterval(() => {
-      currentStep++;
-      setPoints((prev) => {
-        const newValue = Math.min(99999, Math.max(0, prev + stepSize * sign));
-        if (currentStep >= steps || (sign === -1 && newValue <= result) || (sign === 1 && newValue >= result)) {
-          clearInterval(intervalId);
-          return result;
-        }
-        return newValue;
-      });
-    }, stepTime);
-  };
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <div className="relative h-full select-none bg-gradient-to-b from-slate-950 to-indigo-950 px-4 pb-4">
@@ -82,36 +79,26 @@ export const Counter = ({ awake, setAwake }: { awake: boolean; setAwake: (awake:
               <Button negative={sign === -1} onClick={() => setDiff((prev) => prev + 100)}>
                 {sign === 1 ? '+' : '-'}100
               </Button>
-              <div className="absolute left-full top-1/2 grid -translate-y-1/2 grid-cols-1 gap-2 pl-2">
-                <IconButton
-                  onClick={() => {
-                    setDiff(0);
-                    setAwake(false);
-                  }}
-                >
-                  <X size="20" />
-                </IconButton>
-                <IconButton
-                  onClick={() => {
-                    animatedCount(Math.abs(8000 - points), points > 8000 ? -1 : 1);
-                    setDiff(0);
-                    setAwake(false);
-                  }}
-                >
-                  <RefreshCw />
-                </IconButton>
-              </div>
             </div>
           </div>
         )}
-        <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-2">
+        <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-x-4 gap-y-2">
           <div
             onClick={() => {
               if (!custom) setAwake(false);
             }}
             className="col-start-2 text-end text-5xl font-bold"
           >
-            <span>{points}</span>
+            <span>{isClient ? points : 8000}</span>
+          </div>
+          <div className={`transition-opacity ${(awake || custom) && diff > 0 ? '' : 'pointer-events-none opacity-0'}`}>
+            <IconButton
+              onClick={() => {
+                setDiff(0);
+              }}
+            >
+              <X size="20" />
+            </IconButton>
           </div>
           <div
             className={`col-start-1 flex items-center justify-end transition-opacity ${awake || custom ? '' : 'pointer-events-none opacity-0'}`}
@@ -131,6 +118,7 @@ export const Counter = ({ awake, setAwake }: { awake: boolean; setAwake: (awake:
           >
             <IconButton
               onClick={() => {
+                sessionStorage.setItem(id, Math.min(99999, Math.max(0, points + diff * sign)).toString());
                 animatedCount(diff, sign);
                 setDiff(0);
                 setCustom(false);
